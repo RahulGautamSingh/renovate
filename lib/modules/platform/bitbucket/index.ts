@@ -186,7 +186,7 @@ export async function initRepo({
   repository,
   cloneSubmodules,
   ignorePrAuthor,
-  bbUseDevelopmentBranch,
+  platformOptions,
 }: RepoParams): Promise<RepoResult> {
   logger.debug(`initRepo("${repository}")`);
   const opts = hostRules.find({
@@ -208,7 +208,7 @@ export async function initRepo({
 
     mainBranch = info.mainbranch;
 
-    if (bbUseDevelopmentBranch) {
+    if (platformOptions?.bbUseDevelopmentBranch) {
       // Fetch Bitbucket development branch
       const developmentBranch = (
         await bitbucketHttp.getJson<RepoBranchingModel>(
