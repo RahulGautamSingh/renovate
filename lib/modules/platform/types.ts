@@ -48,8 +48,11 @@ export interface RepoParams {
   renovateUsername?: string;
   cloneSubmodules?: boolean;
   ignorePrAuthor?: boolean;
-  bbUseDevelopmentBranch?: boolean;
+  // bbUseDevelopmentBranch?: boolean;
   includeMirrors?: boolean;
+  platformOptions?: {
+    bbUseDevelopmentBranch?: boolean;
+  };
 }
 
 export interface PrDebugData {

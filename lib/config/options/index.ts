@@ -2078,6 +2078,7 @@ const options: RenovateOptions[] = [
     type: 'boolean',
     default: true,
     supportedPlatforms: ['bitbucket', 'bitbucket-server'],
+    parents: ['platformOptions'],
   },
   {
     name: 'bbUseDevelopmentBranch',
@@ -2087,6 +2088,7 @@ const options: RenovateOptions[] = [
     supportedPlatforms: ['bitbucket'],
     globalOnly: true,
     inheritConfigSupport: true,
+    parents: ['platformOptions'],
   },
   // Automatic merging
   {
@@ -3125,6 +3127,13 @@ const options: RenovateOptions[] = [
     type: 'boolean',
     default: false,
     globalOnly: true,
+  },
+  {
+    name: 'platformOptions',
+    description:
+      'Used to set platform specific config options, to control platform behaviour.',
+    type: 'object',
+    default: {},
   },
 ];
 
