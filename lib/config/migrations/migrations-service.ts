@@ -10,6 +10,8 @@ import { AutomergePatchMigration } from './custom/automerge-patch-migration';
 import { AutomergeTypeMigration } from './custom/automerge-type-migration';
 import { AzureGitLabAutomergeMigration } from './custom/azure-gitlab-automerge-migration';
 import { BaseBranchMigration } from './custom/base-branch-migration';
+import { BbUseDefaultReviewersMigration } from './custom/bb-use-default-reviewers-migration';
+import { BbUseDevelopmentBranchMigration } from './custom/bb-use-development-branch-migration';
 import { BinarySourceMigration } from './custom/binary-source-migration';
 import { BranchNameMigration } from './custom/branch-name-migration';
 import { BranchPrefixMigration } from './custom/branch-prefix-migration';
@@ -156,9 +158,14 @@ export class MigrationsService {
     FetchReleaseNotesMigration,
     MatchManagersMigration,
     CustomManagersMigration,
+    BbUseDevelopmentBranchMigration,
+    BbUseDefaultReviewersMigration,
   ];
 
-  static run(originalConfig: RenovateConfig): RenovateConfig {
+  static run(
+    originalConfig: RenovateConfig,
+    parentKey?: string,
+  ): RenovateConfig {
     const migratedConfig: RenovateConfig = {};
     const migrations = this.getMigrations(originalConfig, migratedConfig);
 
@@ -167,7 +174,7 @@ export class MigrationsService {
       const migration = MigrationsService.getMigration(migrations, key);
 
       if (migration) {
-        migration.run(value, key);
+        migration.run(value, key, parentKey);
 
         if (migration.deprecated) {
           delete migratedConfig[key];
