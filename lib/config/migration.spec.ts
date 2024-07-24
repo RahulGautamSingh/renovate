@@ -796,11 +796,15 @@ describe('config/migration', () => {
     const config = {
       bbUseDevelopmentBranch: true,
       bbUseDefaultReviewers: false,
+      gitLabIgnoreApprovals: false,
+      azureWorkItemId: 123321,
     };
     const res = configMigration.migrateConfig(config);
     expect(res.migratedConfig.platformOptions).toEqual({
       bbUseDevelopmentBranch: true,
       bbUseDefaultReviewers: false,
+      gitLabIgnoreApprovals: false,
+      azureWorkItemId: 123321,
     });
   });
 });

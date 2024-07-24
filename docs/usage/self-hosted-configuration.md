@@ -279,6 +279,10 @@ Configuring this to `true` means that Renovate will detect and use the Bitbucket
 
 If the "development branch" is configured but the branch itself does not exist (e.g. it was deleted), Renovate will fall back to using the repository's "main branch". This fall back behavior matches that of the Bitbucket Cloud web interface.
 
+<!-- prettier-ignore -->
+!!! note
+    Only valid within [platformOptions](configuration-options.md#platformoptions) object.
+
 ## binarySource
 
 Renovate often needs to use third-party tools in its PRs, like `npm` to update `package-lock.json` or `go` to update `go.sum`.

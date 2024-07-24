@@ -1,7 +1,7 @@
 import { BbUseDevelopmentBranchMigration } from './bb-use-development-branch-migration';
 
 describe('config/migrations/custom/bb-use-development-branch-migration', () => {
-  it('should migrate "auto" to "global"', () => {
+  it('should migrate', () => {
     expect(BbUseDevelopmentBranchMigration).toMigrate(
       {
         bbUseDevelopmentBranch: true,

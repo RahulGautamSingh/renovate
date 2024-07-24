@@ -300,7 +300,19 @@ export interface RenovateConfig
   statusCheckNames?: Record<StatusCheckKey, string | null>;
   env?: UserEnv;
   logLevelRemap?: LogLevelRemap[];
-  platformOptions?: Record<string, boolean>;
+  platformOptions?: PlatformOptions;
+}
+
+export interface PlatformOptions {
+  azureWorkItemId?: number;
+  bbUseDefaultReviewers?: boolean;
+  bbUseDevelopmentBranch?: boolean;
+  gitLabIgnoreApprovals?: boolean;
+
+  // converted from experimental env vars
+  gitlabAutoMergeableCheckAttempts?: number;
+  gitlabBranchStatusDelay?: number;
+  gitlabMergeRequestDelay?: number;
 }
 
 const CustomDatasourceFormats = ['json', 'plain', 'yaml', 'html'] as const;

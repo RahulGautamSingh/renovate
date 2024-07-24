@@ -1,7 +1,7 @@
 import { BbUseDefaultReviewersMigration } from './bb-use-default-reviewers-migration';
 
 describe('config/migrations/custom/bb-use-default-reviewers-migration', () => {
-  it('should migrate "auto" to "global"', () => {
+  it('should migrate', () => {
     expect(BbUseDefaultReviewersMigration).toMigrate(
       {
         bbUseDefaultReviewers: true,

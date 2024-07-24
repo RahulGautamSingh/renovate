@@ -3,6 +3,7 @@ import { setTimeout } from 'timers/promises';
 import is from '@sindresorhus/is';
 import pMap from 'p-map';
 import semver from 'semver';
+import type { PlatformOptions } from '../../../config/types';
 import {
   CONFIG_GIT_URL_UNAVAILABLE,
   PLATFORM_AUTHENTICATION_ERROR,
@@ -23,7 +24,6 @@ import * as git from '../../../util/git';
 import * as hostRules from '../../../util/host-rules';
 import { setBaseUrl } from '../../../util/http/gitlab';
 import type { HttpResponse } from '../../../util/http/types';
-import { parseInteger } from '../../../util/number';
 import * as p from '../../../util/promises';
 import { regEx } from '../../../util/regex';
 import { sanitize } from '../../../util/sanitize';
@@ -83,6 +83,7 @@ let config: {
   cloneSubmodules: boolean | undefined;
   ignorePrAuthor: boolean | undefined;
   squash: boolean;
+  platformOptions: PlatformOptions | undefined;
 } = {} as any;
 
 const defaults = {
@@ -102,6 +103,7 @@ export async function initPlatform({
   endpoint,
   token,
   gitAuthor,
+  platformOptions,
 }: PlatformParams): Promise<PlatformResult> {
   if (!token) {
     throw new Error('Init: You must configure a GitLab personal access token');
@@ -154,6 +156,7 @@ export async function initPlatform({
     ? DRAFT_PREFIX_DEPRECATED
     : DRAFT_PREFIX;
 
+  config.platformOptions = platformOptions;
   return platformConfig;
 }
 
@@ -307,7 +310,7 @@ export async function initRepo({
   endpoint,
   includeMirrors,
 }: RepoParams): Promise<RepoResult> {
-  config = {} as any;
+  config ??= {} as any; // do not initialize to empty object as we might lose fields set in initPlatform
   config.repository = urlEscape(repository);
   config.cloneSubmodules = cloneSubmodules;
   config.ignorePrAuthor = ignorePrAuthor;
@@ -666,18 +669,13 @@ async function tryPrAutomerge(
       ];
       const desiredStatus = 'can_be_merged';
       // The default value of 5 attempts results in max. 13.75 seconds timeout if no pipeline created.
-      const retryTimes = parseInteger(
-        process.env.RENOVATE_X_GITLAB_AUTO_MERGEABLE_CHECK_ATTEMPS,
-        5,
-      );
+      const retryTimes =
+        config.platformOptions?.gitlabAutoMergeableCheckAttempts;
 
-      const mergeDelay = parseInteger(
-        process.env.RENOVATE_X_GITLAB_MERGE_REQUEST_DELAY,
-        250,
-      );
+      const mergeDelay = config.platformOptions?.gitlabMergeRequestDelay;
 
       // Check for correct merge request status before setting `merge_when_pipeline_succeeds` to  `true`.
-      for (let attempt = 1; attempt <= retryTimes; attempt += 1) {
+      for (let attempt = 1; attempt <= retryTimes!; attempt += 1) {
         const { body } = await gitlabApi.getJson<{
           merge_status: string;
           detailed_merge_status?: string;
@@ -705,12 +703,12 @@ async function tryPrAutomerge(
           break;
         }
         logger.debug(`PR not yet in mergeable state. Retrying ${attempt}`);
-        await setTimeout(mergeDelay * attempt ** 2); // exponential backoff
+        await setTimeout(mergeDelay! * attempt ** 2); // exponential backoff
       }
 
       // Even if Gitlab returns a "merge-able" merge request status, enabling auto-merge sometimes
       // returns a 405 Method Not Allowed. It seems to be a timing issue within Gitlab.
-      for (let attempt = 1; attempt <= retryTimes; attempt += 1) {
+      for (let attempt = 1; attempt <= retryTimes!; attempt += 1) {
         try {
           await gitlabApi.putJson(
             `projects/${config.repository}/merge_requests/${pr}/merge`,
@@ -728,7 +726,7 @@ async function tryPrAutomerge(
             `Automerge on PR creation failed. Retrying ${attempt}`,
           );
         }
-        await setTimeout(mergeDelay * attempt ** 2); // exponential backoff
+        await setTimeout(mergeDelay! * attempt ** 2); // exponential backoff
       }
     }
   } catch (err) /* istanbul ignore next */ {
@@ -1042,9 +1040,7 @@ export async function setBranchStatus({
 
   try {
     // give gitlab some time to create pipelines for the sha
-    await setTimeout(
-      parseInteger(process.env.RENOVATE_X_GITLAB_BRANCH_STATUS_DELAY, 1000),
-    );
+    await setTimeout(config.platformOptions?.gitlabBranchStatusDelay);
 
     await gitlabApi.postJson(url, { body: options });
 

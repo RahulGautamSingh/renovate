@@ -41,6 +41,7 @@ const renameKeys = {
   gitLabAutomerge: 'platformAutomerge', // migrate: gitLabAutomerge
   mergeConfidenceApiBaseUrl: 'mergeConfidenceEndpoint',
   mergeConfidenceSupportedDatasources: 'mergeConfidenceDatasources',
+  gitlabAutoMergeableCheckAttemps: 'gitlabAutoMergeableCheckAttempts', // accounting for typo in RENOVATE_X_GITLAB_AUTO_MERGEABLE_CHECK_ATTEMPS
 };
 
 function renameEnvKeys(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
@@ -90,6 +91,9 @@ const convertedExperimentalEnvVars = [
   'RENOVATE_X_AUTODISCOVER_REPO_ORDER',
   'RENOVATE_X_MERGE_CONFIDENCE_API_BASE_URL',
   'RENOVATE_X_MERGE_CONFIDENCE_SUPPORTED_DATASOURCES',
+  'RENOVATE_X_GITLAB_AUTO_MERGEABLE_CHECK_ATTEMPS',
+  'RENOVATE_X_GITLAB_BRANCH_STATUS_DELAY',
+  'RENOVATE_X_GITLAB_MERGE_REQUEST_DELAY',
 ];
 
 /**
@@ -220,6 +224,30 @@ export async function getConfig(
   ];
 
   unsupportedEnv.forEach((val) => delete env[val]);
+
+  config = migratePlatformOptions(config);
+  return config;
+}
+
+function migratePlatformOptions(config: AllConfig): AllConfig {
+  const platformOptionsKeys = [
+    'gitlabAutoMergeableCheckAttempts',
+    'gitlabBranchStatusDelay',
+    'gitlabMergeRequestDelay',
+  ];
+  const platformOptions: Record<string, unknown> = {};
+  let updated = false;
+  for (const key of platformOptionsKeys) {
+    if (is.number(config[key])) {
+      updated = true;
+      platformOptions[key] = config[key];
+      delete config[key];
+    }
+  }
+
+  if (updated) {
+    config.platformOptions = platformOptions;
+  }
 
   return config;
 }

@@ -1,4 +1,4 @@
-import type { MergeStrategy } from '../../config/types';
+import type { MergeStrategy, PlatformOptions } from '../../config/types';
 import type { BranchStatus, HostRule, VulnerabilityAlert } from '../../types';
 import type { CommitFilesConfig, LongCommitSha } from '../../util/git/types';
 
@@ -16,6 +16,7 @@ export interface PlatformParams {
   username?: string;
   password?: string;
   gitAuthor?: string;
+  platformOptions?: PlatformOptions;
 }
 
 export interface PlatformResult {
@@ -48,11 +49,8 @@ export interface RepoParams {
   renovateUsername?: string;
   cloneSubmodules?: boolean;
   ignorePrAuthor?: boolean;
-  // bbUseDevelopmentBranch?: boolean;
   includeMirrors?: boolean;
-  platformOptions?: {
-    bbUseDevelopmentBranch?: boolean;
-  };
+  platformOptions?: PlatformOptions;
 }
 
 export interface PrDebugData {

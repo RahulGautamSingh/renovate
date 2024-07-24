@@ -288,11 +288,6 @@ If you prefer that Renovate more silently automerge _without_ Pull Requests at a
 The final value for `automergeType` is `"pr-comment"`, intended only for users who already have a "merge bot" such as [bors-ng](https://github.com/bors-ng/bors-ng) and want Renovate to _not_ actually automerge by itself and instead tell `bors-ng` to merge for it, by using a comment in the PR.
 If you're not already using `bors-ng` or similar, don't worry about this option.
 
-## azureWorkItemId
-
-When creating a PR in Azure DevOps, some branches can be protected with branch policies to [check for linked work items](https://docs.microsoft.com/en-us/azure/devops/repos/git/branch-policies?view=azure-devops#check-for-linked-work-items).
-Creating a work item in Azure DevOps is beyond the scope of Renovate, but Renovate can link an already existing work item when creating PRs.
-
 ## baseBranches
 
 By default, Renovate will detect and process only the repository's default branch.
@@ -336,10 +331,6 @@ You can also use the special `"$default"` string to denote the repository's defa
 !!! note
     Do _not_ use the `baseBranches` config option when you've set a `forkToken`.
     You may need a `forkToken` when you're using the Forking Renovate app.
-
-## bbUseDefaultReviewers
-
-Configuring this to `true` means that Renovate will detect and apply the default reviewers rules to PRs (Bitbucket only).
 
 ## branchConcurrentLimit
 
@@ -1505,13 +1496,6 @@ Example:
   "gitIgnoredAuthors": ["some-bot@example.org"]
 }
 ```
-
-## gitLabIgnoreApprovals
-
-Ignore the default project level approval(s), so that Renovate bot can automerge its merge requests, without needing approval(s).
-Under the hood, it creates a MR-level approval rule where `approvals_required` is set to `0`.
-This option works only when `automerge=true` and either `automergeType=pr` or `automergeType=branch`.
-Also, approval rules overriding should not be [prevented in GitLab settings](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/settings.html#prevent-editing-approval-rules-in-merge-requests).
 
 ## goGetDirs
 
@@ -3365,6 +3349,70 @@ It does not apply when you use a Personal Access Token as credential.
 
 When `platformCommit` is enabled, Renovate will create commits with GitHub's API instead of using `git` directly.
 This way Renovate can use GitHub's [Commit signing support for bots and other GitHub Apps](https://github.blog/2019-08-15-commit-signing-support-for-bots-and-other-github-apps/) feature.
+
+## platformOptions
+
+Use this option to configure the platform specific configuration options provided by renovate.
+
+Example:
+
+```json
+{
+  "platformOptions": {
+    "bbUseDevelopmentBranch": true,
+    "gitlabAutoMergeableCheckAttempts": 3,
+    "gitlabBranchStatusDelay": 4,
+    "gitlabMergeRequestDelay": 100,
+    "gitLabIgnoreApprovals": true,
+    "bbUseDefaultReviewers": true,
+    "azureWorkItemId": 123213
+  }
+}
+```
+
+Currently the following options are available:
+
+### azureWorkItemId
+
+When creating a PR in Azure DevOps, some branches can be protected with branch policies to [check for linked work items](https://docs.microsoft.com/en-us/azure/devops/repos/git/branch-policies?view=azure-devops#check-for-linked-work-items).
+Creating a work item in Azure DevOps is beyond the scope of Renovate, but Renovate can link an already existing work item when creating PRs.
+
+### bbUseDefaultReviewers
+
+Configuring this to `true` means that Renovate will detect and apply the default reviewers rules to PRs (Bitbucket only).
+
+### bbUseDevelopmentBranch
+
+This option is only configurable in the self-hosted config, make sure not to include it in the repo config.
+To know more, check the description [here](./self-hosted-configuration.md#bbusedevelopmentbranch).
+
+### gitlabAutoMergeableCheckAttempts
+
+If set to an positive integer, Renovate will use this as the number of attempts to check if a merge request on GitLab is mergeable before trying to automerge.
+The formula for the delay between attempts is `gitlabMergeRequestDelay * attempt * attempt` milliseconds.
+
+Default value: `5` (attempts results in max. 13.75 seconds timeout).
+
+### gitlabBranchStatusDelay
+
+Adjust default time (in milliseconds) given to GitLab to create pipelines for a commit pushed by Renovate.
+
+Can be useful for slow-running, self-hosted GitLab instances that don't react fast enough for the default delay to help.
+
+Default value: `1000` (milliseconds).
+
+### gitlabMergeRequestDelay
+
+If set, Renovate will use this as a delay to proceed with an automerge.
+
+Default value: `250` (milliseconds).
+
+### gitLabIgnoreApprovals
+
+Ignore the default project level approval(s), so that Renovate bot can automerge its merge requests, without needing approval(s).
+Under the hood, it creates a MR-level approval rule where `approvals_required` is set to `0`.
+This option works only when `automerge=true` and either `automergeType=pr` or `automergeType=branch`.
+Also, approval rules overriding should not be [prevented in GitLab settings](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/settings.html#prevent-editing-approval-rules-in-merge-requests).
 
 ## postUpdateOptions
 

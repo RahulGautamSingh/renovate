@@ -1,16 +1,16 @@
 import is from '@sindresorhus/is';
 import { AbstractMigration } from '../base/abstract-migration';
 
-export class BbUseDevelopmentBranchMigration extends AbstractMigration {
-  override readonly propertyName = 'bbUseDevelopmentBranch';
+export class AzureWorkItemIdMigration extends AbstractMigration {
+  override readonly propertyName = 'azureWorkItemId';
 
   override run(value: unknown, key: string, parentKey?: string): void {
-    if (is.boolean(value) && parentKey !== 'platformOptions') {
+    if (is.number(value) && parentKey !== 'platformOptions') {
       const platformOptions = this.get('platformOptions') ?? {};
       this.delete();
       this.setHard('platformOptions', {
         ...platformOptions,
-        bbUseDevelopmentBranch: value,
+        azureWorkItemId: value,
       });
     }
   }

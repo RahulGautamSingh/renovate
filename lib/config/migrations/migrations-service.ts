@@ -9,6 +9,7 @@ import { AutomergeMinorMigration } from './custom/automerge-minor-migration';
 import { AutomergePatchMigration } from './custom/automerge-patch-migration';
 import { AutomergeTypeMigration } from './custom/automerge-type-migration';
 import { AzureGitLabAutomergeMigration } from './custom/azure-gitlab-automerge-migration';
+import { AzureWorkItemIdMigration } from './custom/azure-work-item-id-migration';
 import { BaseBranchMigration } from './custom/base-branch-migration';
 import { BbUseDefaultReviewersMigration } from './custom/bb-use-default-reviewers-migration';
 import { BbUseDevelopmentBranchMigration } from './custom/bb-use-development-branch-migration';
@@ -24,6 +25,7 @@ import { DryRunMigration } from './custom/dry-run-migration';
 import { EnabledManagersMigration } from './custom/enabled-managers-migration';
 import { ExtendsMigration } from './custom/extends-migration';
 import { FetchReleaseNotesMigration } from './custom/fetch-release-notes-migration';
+import { GitlabIgnoreApprovalsractMigration } from './custom/gitlab-ignore-approvals-migration';
 import { GoModTidyMigration } from './custom/go-mod-tidy-migration';
 import { HostRulesMigration } from './custom/host-rules-migration';
 import { IgnoreNodeModulesMigration } from './custom/ignore-node-modules-migration';
@@ -160,6 +162,8 @@ export class MigrationsService {
     CustomManagersMigration,
     BbUseDevelopmentBranchMigration,
     BbUseDefaultReviewersMigration,
+    AzureWorkItemIdMigration,
+    GitlabIgnoreApprovalsractMigration,
   ];
 
   static run(

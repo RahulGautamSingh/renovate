@@ -5,8 +5,8 @@ export class BbUseDefaultReviewersMigration extends AbstractMigration {
   override readonly propertyName = 'bbUseDefaultReviewers';
 
   override run(value: unknown, key: string, parentKey?: string): void {
-    const platformOptions = this.get('platformOptions') ?? {};
     if (is.boolean(value) && parentKey !== 'platformOptions') {
+      const platformOptions = this.get('platformOptions') ?? {};
       this.delete();
       this.setHard('platformOptions', {
         ...platformOptions,

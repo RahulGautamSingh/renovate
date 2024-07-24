@@ -1353,13 +1353,15 @@ describe('config/validation', () => {
 
     it('catches when negative number is used for integer type', async () => {
       const config = {
-        azureWorkItemId: -2,
+        platformOptions: {
+          azureWorkItemId: -2,
+        },
       };
       const { errors } = await configValidation.validateConfig('repo', config);
       expect(errors).toMatchObject([
         {
           message:
-            'Configuration option `azureWorkItemId` should be a positive integer. Found negative value instead.',
+            'Configuration option `platformOptions.azureWorkItemId` should be a positive integer. Found negative value instead.',
           topic: 'Configuration Error',
         },
       ]);
