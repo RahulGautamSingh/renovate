@@ -769,4 +769,20 @@ describe('config/migration', () => {
     res = configMigration.migrateConfig(config);
     expect(res.isMigrated).toBeTrue();
   });
+
+  it('does not further nest children options, if already inside correct parent', () => {
+    const config = {
+      bbUseDevelopmentBranch: true,
+      bbUseDefaultReviewers: false,
+      gitLabIgnoreApprovals: false,
+      azureWorkItemId: 123321,
+    };
+    const res = configMigration.migrateConfig(config);
+    expect(res.migratedConfig.platformOptions).toEqual({
+      bbUseDevelopmentBranch: true,
+      bbUseDefaultReviewers: false,
+      gitLabIgnoreApprovals: false,
+      azureWorkItemId: 123321,
+    });
+  });
 });

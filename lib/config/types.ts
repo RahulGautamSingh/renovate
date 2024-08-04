@@ -299,6 +299,19 @@ export interface RenovateConfig
   statusCheckNames?: Record<StatusCheckKey, string | null>;
   env?: UserEnv;
   logLevelRemap?: LogLevelRemap[];
+  platformOptions?: PlatformOptions;
+}
+
+export interface PlatformOptions {
+  azureWorkItemId?: number;
+  bbUseDefaultReviewers?: boolean;
+  bbUseDevelopmentBranch?: boolean;
+  gitLabIgnoreApprovals?: boolean;
+
+  // converted from experimental env vars
+  gitlabAutoMergeableCheckAttempts?: number;
+  gitlabBranchStatusDelay?: number;
+  gitlabMergeRequestDelay?: number;
 }
 
 const CustomDatasourceFormats = ['json', 'plain', 'yaml', 'html'] as const;
@@ -390,7 +403,8 @@ export type AllowedParents =
   | 'hostRules'
   | 'postUpgradeTasks'
   | 'packageRules'
-  | 'logLevelRemap';
+  | 'logLevelRemap'
+  | 'platformOptions';
 export interface RenovateOptionBase {
   /**
    * If true, the option can only be configured by people with access to the Renovate instance.

@@ -257,7 +257,9 @@ describe('modules/platform/bitbucket/index', () => {
 
       const res = await bitbucket.initRepo({
         repository: 'some/repo',
-        bbUseDevelopmentBranch: false,
+        platformOptions: {
+          bbUseDevelopmentBranch: false,
+        },
       });
 
       expect(res.defaultBranch).toBe('master');
@@ -279,7 +281,9 @@ describe('modules/platform/bitbucket/index', () => {
 
       const res = await bitbucket.initRepo({
         repository: 'some/repo',
-        bbUseDevelopmentBranch: true,
+        platformOptions: {
+          bbUseDevelopmentBranch: true,
+        },
       });
 
       expect(res.defaultBranch).toBe('develop');
@@ -301,7 +305,9 @@ describe('modules/platform/bitbucket/index', () => {
 
       const res = await bitbucket.initRepo({
         repository: 'some/repo',
-        bbUseDevelopmentBranch: true,
+        platformOptions: {
+          bbUseDevelopmentBranch: true,
+        },
       });
 
       expect(res.defaultBranch).toBe('master');
