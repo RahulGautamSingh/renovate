@@ -9,7 +9,6 @@ const replaceStop = '<!-- Autogenerate end -->';
 const goodUrlRegex = regEx(/\[(.+?)\]\((.+?)\)/);
 
 export function capitalize(input: string): string {
-  // console.log(input);
   return input[0].toUpperCase() + input.slice(1);
 }
 
