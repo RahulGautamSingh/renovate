@@ -1,6 +1,3 @@
-import { CronPattern } from 'croner';
-import cronstrue from 'cronstrue';
-import { capitalize } from '../../../../../../tools/docs/utils';
 import { emojify } from '../../../../../util/emoji';
 import type { BranchConfig } from '../../../../types';
 
@@ -58,8 +55,7 @@ function scheduleToString(
     schedule[0] !== 'at any time' &&
     schedule[0] !== '* * * * *'
   ) {
-    scheduleString =
-      getReadableCronSchedule(schedule) ?? `"${String(schedule)}"`;
+    scheduleString = `"${String(schedule)}"`;
     if (timezone) {
       scheduleString += ` in timezone ${timezone}`;
     } else {
@@ -75,23 +71,3 @@ function scheduleToString(
  * Return human-readable cron schedule summary if the schedule is a valid cron
  * else return null
  */
-function getReadableCronSchedule(scheduleText: string[]): string | null {
-  // assuming if one schedule is cron the others in the array will also be in cron syntax
-  try {
-    new CronPattern(scheduleText[0]); // validate cron
-    return scheduleText
-      .map(
-        (cron) =>
-          capitalize(
-            cronstrue
-              .toString(cron, {
-                throwExceptionOnParseError: false,
-              })
-              .replace('Every minute, ', ''),
-          ) + ` ( ${cron} )`,
-      )
-      .join(', ');
-  } catch {
-    return null;
-  }
-}
