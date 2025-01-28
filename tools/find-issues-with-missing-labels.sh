@@ -2,7 +2,6 @@
 
 # When the repository labels are changed (i.e dropped a label, added a label, etc), you should make the same change to the lists below.
 # For example, if the repository added a "type:task" type label, then add "-label:type:task" to the TYPE_LABELS_FILTER.
-TYPE_LABELS_FILTER='-label:type:bug -label:type:feature -label:type:docs -label:type:refactor -label:type:help'
 
 PRIORITY_LABELS_FILTER='-label:priority-1-critical -label:priority-2-high -label:priority-3-medium -label:priority-4-low'
 
@@ -10,11 +9,11 @@ HAS_ISSUES_MISSING_LABELS=false
 
 ISSUE_BODY="# Label check action\n"
 
-REPO='renovatebot/renovate'
+REPO='Rahul-renovate-testing/repro-33701'
 
 ISSUE_TITLE="Issues with missing labels"
 
-for FILTER in "$TYPE_LABELS_FILTER" "$PRIORITY_LABELS_FILTER"; do
+for FILTER in "$PRIORITY_LABELS_FILTER"; do
   # Extract the label type from the filter
   LABEL_TYPE=$(echo "$FILTER" | cut -d ':' -f 2 | cut -d '-' -f 1)
 
@@ -27,7 +26,7 @@ for FILTER in "$TYPE_LABELS_FILTER" "$PRIORITY_LABELS_FILTER"; do
     HAS_ISSUES_MISSING_LABELS=true
 
     # Create a list of issue numbers
-    FORMATTED_OUTPUT=$(echo "$ISSUES_MISSING_LABEL" | jq -r '.[].number' | sed 's/^/- https:\/\/redirect.github.com\/renovatebot\/renovate\/issues\//')
+    FORMATTED_OUTPUT=$(echo "$ISSUES_MISSING_LABEL" | jq -r '.[].number' | sed 's/^/- #/')
 
     # Count the issues and decide if the output should be singular or plural
     ISSUE_COUNT=$(echo "$ISSUES_MISSING_LABEL" | jq '. | length')
@@ -40,7 +39,7 @@ done
 
 if [ "$HAS_ISSUES_MISSING_LABELS" = false ]; then
   echo "All checked issues have labels. Exiting the action."
-  exit 0
+  ISSUE_BODY="$ISSUE_BODY All checked issues are correctly labeled.\n"
 fi
 
 LABEL_CHECK_ISSUE_EXISTS=$(gh search issues --repo $REPO --json "number,author,title" | jq --arg title "$ISSUE_TITLE" 'map(select(.title == $title and .author.type == "Bot"))') || { echo "Failed to fetch existing label check issue"; exit 1; }
@@ -65,4 +64,3 @@ echo -e "$ISSUE_BODY"
 echo "Found issues without labels. Please check the issue(s) listed above. Exiting the action."
 
 exit 1
-
