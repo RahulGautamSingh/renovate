@@ -8,12 +8,23 @@ export function calculateLibYears(
   if (!packageFiles) {
     return;
   }
+
+  // if same dep is present twice with 2 diffferent version it is counted twice
+  const allDeps = new Set();
+  const depWithUpdates = new Set();
   const managerLibYears: Record<string, number> = {};
   for (const [manager, files] of Object.entries(packageFiles)) {
+    const managerDeps = new Set<string>();
     for (const file of files) {
       let fileLibYears = 0;
       for (const dep of file.deps) {
+        const depKey = `${dep.depName}@${dep.currentVersion ?? dep.currentValue}`;
+        allDeps.add(depKey);
         if (dep.updates?.length) {
+          if (depWithUpdates.has(depKey) || managerDeps.has(depKey)) {
+            continue;
+          }
+
           for (const update of dep.updates) {
             if (!update.releaseTimestamp) {
               logger.debug(
@@ -43,6 +54,9 @@ export function calculateLibYears(
             ...dep.updates.map((update) => update.libYears ?? 0),
             0,
           );
+
+          depWithUpdates.add(depKey);
+          managerDeps.add(depKey);
           fileLibYears += depLibYears;
         }
       }
@@ -55,5 +69,13 @@ export function calculateLibYears(
   for (const libYears of Object.values(managerLibYears)) {
     totalLibYears += libYears;
   }
-  logger.debug({ managerLibYears, totalLibYears }, 'Repository libYears');
+  logger.debug(
+    {
+      managerLibYears,
+      totalLibYears,
+      totalDeps: allDeps.size,
+      outdateDeps: depWithUpdates.size,
+    },
+    'Repository libYears',
+  );
 }
