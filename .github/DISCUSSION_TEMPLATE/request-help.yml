@@ -7,6 +7,16 @@ body:
         - 'A Mend.io-hosted app'
         - 'Self-hosted Renovate'
 
+  - type: dropdown
+    id: which-OS-are-you-running-renovate-on
+    attributes:
+      label: Which OS are you running Renovate on? (if applicable)
+      options:
+        - 'Windows - non WSL'
+        - 'Windows - WSL'
+        - 'Linux'
+        - 'MacOS'
+
   - type: input
     id: self-hosted-version
     attributes:
