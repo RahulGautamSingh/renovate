@@ -1,0 +1,32 @@
+<project name="issue-42076-repro">
+  <property name="inline.slf4j.version" value="1.7.36" />
+  <property file="versions/versions-a.properties" />
+  <property file="versions/versions-b.properties" />
+
+  <artifact:dependencies
+    pathId="compile.classpath"
+    settingsFile="build/settings.xml"
+  >
+    <dependency
+      groupId="org.slf4j"
+      artifactId="slf4j-api"
+      version="${inline.slf4j.version}"
+      scope="compile"
+    />
+    <dependency
+      groupId="junit"
+      artifactId="junit"
+      version="${junit.version}"
+      scope="test"
+    />
+    <dependency
+      groupId="org.apache.commons"
+      artifactId="commons-lang3"
+      version="3.12.0"
+      scope="runtime"
+    />
+    <dependency coords="org.apache.curator:curator-framework:${curator.version}" />
+  </artifact:dependencies>
+
+  <import file="imported/dep.xml" />
+</project>

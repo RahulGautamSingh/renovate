@@ -1,5 +1,6 @@
 import * as ansible from './ansible/index.ts';
 import * as ansibleGalaxy from './ansible-galaxy/index.ts';
+import * as ant from './ant/index.ts';
 import * as argoCD from './argocd/index.ts';
 import * as asdf from './asdf/index.ts';
 import * as azurePipelines from './azure-pipelines/index.ts';
@@ -115,6 +116,7 @@ export default api;
 
 api.set('ansible', ansible);
 api.set('ansible-galaxy', ansibleGalaxy);
+api.set('ant', ant);
 api.set('argocd', argoCD);
 api.set('asdf', asdf);
 api.set('azure-pipelines', azurePipelines);

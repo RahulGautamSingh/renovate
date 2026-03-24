@@ -1,0 +1,27 @@
+<project name="issue-42076-imported">
+  <property name="imported.guava.version" value="32.1.2-jre" />
+
+  <artifact:dependencies
+    pathId="imported.classpath"
+    settingsFile="../build/settings.xml"
+  >
+    <remoteRepository url="https://repo.maven.apache.org/maven2" />
+
+    <dependency
+      groupId="com.google.guava"
+      artifactId="guava"
+      version="${imported.guava.version}"
+      scope="compile"
+    />
+
+    <dependency
+      groupId="com.fasterxml.jackson.core"
+      artifactId="jackson-databind"
+      version="${versions.jackson.databind}"
+      scope="provided"
+    />
+
+    <dependency coords="org.apache.commons:commons-collections4:4.4" />
+    <dependency coords="org.apache.commons:commons-text:${commons.text.version}" />
+  </artifact:dependencies>
+</project>
