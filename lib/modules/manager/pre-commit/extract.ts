@@ -9,6 +9,8 @@ import { detectPlatform } from '../../../util/common.ts';
 import { find } from '../../../util/host-rules.ts';
 import { newlineRegex, regEx } from '../../../util/regex.ts';
 import { parseSingleYaml } from '../../../util/yaml.ts';
+import { ForgejoTagsDatasource } from '../../datasource/forgejo-tags/index.ts';
+import { GiteaTagsDatasource } from '../../datasource/gitea-tags/index.ts';
 import { GithubTagsDatasource } from '../../datasource/github-tags/index.ts';
 import { GitlabTagsDatasource } from '../../datasource/gitlab-tags/index.ts';
 import { parseLine } from '../gomod/line-parser.ts';
@@ -50,6 +52,20 @@ function determineDatasource(
     );
     return {
       datasource: GitlabTagsDatasource.id,
+      registryUrls: [`https://${hostname}`],
+    };
+  }
+  if (detectPlatform(repository) === 'forgejo') {
+    logger.debug({ repository, hostname }, 'Found forgejo dependency');
+    return {
+      datasource: ForgejoTagsDatasource.id,
+      registryUrls: [`https://${hostname}`],
+    };
+  }
+  if (detectPlatform(repository) === 'gitea') {
+    logger.debug({ repository, hostname }, 'Found gitea dependency');
+    return {
+      datasource: GiteaTagsDatasource.id,
       registryUrls: [`https://${hostname}`],
     };
   }

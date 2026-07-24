@@ -219,6 +219,52 @@ describe('modules/manager/pre-commit/extract', () => {
       });
     });
 
+    it('can handle forgejo repos', () => {
+      const config = codeBlock`
+        repos:
+          - repo: https://codeberg.org/gherynos/pre-commit-java
+            rev: v0.6.37
+            hooks:
+              - id: pmd
+      `;
+      const result = extractPackageFile(config, filename);
+      expect(result).toEqual({
+        deps: [
+          {
+            currentValue: 'v0.6.37',
+            datasource: 'forgejo-tags',
+            depName: 'gherynos/pre-commit-java',
+            depType: 'repository',
+            packageName: 'gherynos/pre-commit-java',
+            registryUrls: ['https://codeberg.org'],
+          },
+        ],
+      });
+    });
+
+    it('can handle gitea repos', () => {
+      const config = codeBlock`
+        repos:
+          - repo: https://gitea.com/user/pre-commit-hooks
+            rev: v1.0.0
+            hooks:
+              - id: check-yaml
+      `;
+      const result = extractPackageFile(config, filename);
+      expect(result).toEqual({
+        deps: [
+          {
+            currentValue: 'v1.0.0',
+            datasource: 'gitea-tags',
+            depName: 'user/pre-commit-hooks',
+            depType: 'repository',
+            packageName: 'user/pre-commit-hooks',
+            registryUrls: ['https://gitea.com'],
+          },
+        ],
+      });
+    });
+
     it('can handle pinned repo versions', () => {
       const result = extractPackageFile(pinnedPrecommitConfig, filename);
       expect(result).toEqual({
