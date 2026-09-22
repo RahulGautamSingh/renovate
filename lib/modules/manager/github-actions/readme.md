@@ -23,13 +23,35 @@ The GitHub tag is in the format of `<PREFIX><SEPARATOR><VERSION>`.
 _`PREFIX`_ and _`SEPARATOR`_ are optional.
 Valid separators are the ASCII hyphen (`-`) or forward slash (`/`).
 _`VERSION`_ can include the major, minor, and patch components and may optionally include a `v` prefix.
-Here are the examples of valid GitHub tags:
+Here are the examples of GitHub tags that Renovate can read from a version comment:
 `1.0.1`, `1.0`, `1`,
 `v1.0.1`, `v1.0`, `v1`,
 `prefix-1.0.1`, `prefix-1.0`, `prefix-1`,
 `prefix-v1.0.1`, `prefix-v1.0`, `prefix-v1`.
 `prefix/1.0.1`, `prefix/1.0`, `prefix/1`,
 `prefix/v1.0.1`, `prefix/v1.0`, `prefix/v1`.
+
+That list describes which comment shapes Renovate can parse, it does not mean every shape gets version updates.
+Renovate only orders versions when the whole tag matches `/^v?\d+/`, so a tag with a _`PREFIX`_ like `lint-pr-title/v1.2.3` gets digest updates for that exact ref and no version updates.
+Read the [Non-semver refs](#non-semver-refs-branches-and-feature-tags) section to learn about the routing rules.
+
+To get version updates for component-prefixed tags, use `regex` versioning with the prefix as the `compatibility` group:
+
+```json5
+{
+  packageRules: [
+    {
+      matchManagers: ['github-actions'],
+      matchPackageNames: ['grafana/shared-workflows'],
+      matchCurrentValue: '/^.+[-/]v?\\d+\\.\\d+(?:\\.\\d+)?$/',
+      overrideDatasource: 'github-tags',
+      versioning: 'regex:^(?<compatibility>.*)[-/]v?(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$',
+    },
+  ],
+}
+```
+
+The `compatibility` group stops Renovate from comparing tags of one component against tags of another component in the same repository.
 
 If you want to automatically pin action digests add the `helpers:pinGitHubActionDigests` preset to the `extends` array:
 
@@ -145,7 +167,7 @@ You can also control the `gh` CLI version using `constraints.gh`.
 
 ### Non-semver refs (branches and feature tags)
 
-Renovate supports GitHub Actions that reference non-semver refs like branch names (`main`, `master`) or feature-oriented tags (`cargo-llvm-cov`).
+Renovate supports GitHub Actions that reference non-semver refs like branch names (`main`, `master`), feature-oriented tags (`cargo-llvm-cov`) or component-prefixed tags (`lint-pr-title/v1.2.3`).
 
 When the action reference doesn't look like a version number (i.e., doesn't match `/^v?\d+/`), Renovate routes to the `github-digest` datasource which fetches both tags and branches.
 Since these refs have no version ordering, only digest pinning updates are supported.
@@ -156,6 +178,7 @@ Since these refs have no version ordering, only digest pinning updates are suppo
 - `actions/checkout@v4` → `github-tags` datasource (version updates)
 - `taiki-e/install-action@cargo-llvm-cov` → `github-digest` datasource (digest pinning only)
 - `actions/checkout@main` → `github-digest` datasource (digest pinning only)
+- `grafana/shared-workflows/actions/lint-pr-title@<sha> # lint-pr-title/v1.2.3` → `github-digest` datasource (digest pinning only)
 
 When pinning, Renovate adds a comment to preserve the original ref:
 
